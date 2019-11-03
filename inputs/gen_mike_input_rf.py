@@ -10,6 +10,8 @@ import getopt
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 from db_adapter.base import get_Pool, destroy_Pool
+from db_adapter.csv_utils import create_csv, read_csv
+from db_adapter.constants import CURW_OBS_DATABASE, CURW_OBS_PORT, CURW_OBS_PASSWORD, CURW_OBS_USERNAME, CURW_OBS_HOST
 from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_HOST, CURW_SIM_PASSWORD, CURW_SIM_PORT, CURW_SIM_USERNAME
 from db_adapter.curw_sim.timeseries.tide import Timeseries as TideTS
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
@@ -93,14 +95,13 @@ if __name__ == "__main__":
 
     try:
 
-        print("started creating outflow")
+        print("started creating rainfall input for mike")
         start_time = None
         end_time = None
-        flo2d_model = None
 
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "h:m:s:e:",
-                                       ["help", "flo2d_model=", "start_time=", "end_time="])
+            opts, args = getopt.getopt(sys.argv[1:], "h:s:e:",
+                                       ["help", "start_time=", "end_time="])
         except getopt.GetoptError:
             usage()
             sys.exit(2)
@@ -108,54 +109,39 @@ if __name__ == "__main__":
             if opt in ("-h", "--help"):
                 usage()
                 sys.exit()
-            elif opt in ("-m", "--flo2d_model"):
-                flo2d_model = arg.strip()
             elif opt in ("-s", "--start_time"):
                 start_time = arg.strip()
             elif opt in ("-e", "--end_time"):
                 end_time = arg.strip()
 
-        # Load config details and db connection params
-        config = json.loads(open('db_config.json').read())
+        # Load config params
+        config = json.loads(open('rain_config.json').read())
 
         output_dir = read_attribute_from_config_file('output_dir', config)
         file_name = read_attribute_from_config_file('output_file_name', config)
 
-        tide_id = read_attribute_from_config_file('tide_id', config, True)
-
-        if flo2d_model is None:
-            flo2d_model = "flo2d_250"
-        elif flo2d_model not in ("flo2d_250", "flo2d_150"):
-            print("Flo2d model should be either \"flo2d_250\" or \"flo2d_150\"")
-            exit(1)
-
         if start_time is None:
-            start_time = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d 00:00:00')
+            start_time = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d 00:00:00')
         else:
             check_time_format(time=start_time)
 
         if end_time is None:
-            end_time = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
+            end_time = (datetime.now() + timedelta(days=2)).strftime('%Y-%m-%d 00:00:00')
         else:
             check_time_format(time=end_time)
 
         if output_dir is not None and file_name is not None:
             outflow_file_path = os.path.join(output_dir, file_name)
         else:
-            outflow_file_path = os.path.join(r"D:\outflow",
-                                          '{}_{}_{}_{}.DAT'.format(file_name, flo2d_model, start_time, end_time).replace(' ', '_').replace(':', '-'))
+            outflow_file_path = os.path.join(r"D:\curw_mike_data_handlers",
+                                          'mike_rf_{}_{}.DAT'.format(start_time, end_time).replace(' ', '_').replace(':', '-'))
 
         if not os.path.isfile(outflow_file_path):
             print("{} start preparing outflow".format(datetime.now()))
-            if flo2d_model == "flo2d_250":
-                prepare_outflow_250(outflow_file_path, start=start_time, end=end_time, tide_id=tide_id)
-            elif flo2d_model == "flo2d_150":
-                prepare_outflow_150(outflow_file_path, start=start_time, end=end_time, tide_id=tide_id)
+
             print("{} completed preparing outflow".format(datetime.now()))
         else:
             print('Outflow file already in path : ', outflow_file_path)
-
-        # os.system(r"deactivate")
 
     except Exception:
         traceback.print_exc()
