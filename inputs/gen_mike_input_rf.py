@@ -6,14 +6,14 @@ import json
 import os
 import sys
 import getopt
+import pandas as pd
+import numpy as np
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 from db_adapter.base import get_Pool, destroy_Pool
-from db_adapter.csv_utils import create_csv, read_csv
-from db_adapter.constants import CURW_OBS_DATABASE, CURW_OBS_PORT, CURW_OBS_PASSWORD, CURW_OBS_USERNAME, CURW_OBS_HOST
 from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_HOST, CURW_SIM_PASSWORD, CURW_SIM_PORT, CURW_SIM_USERNAME
-from db_adapter.curw_sim.timeseries.tide import Timeseries as TideTS
+from db_adapter.curw_sim.grids import get_obs_to_d03_grid_mappings_for_rainfall
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 
@@ -78,6 +78,60 @@ def create_dir_if_not_exists(path):
         os.makedirs(path)
 
     return path
+
+
+def list_of_lists_to_df_first_row_as_columns_first_column_as_index(data):
+    """
+
+    :param data: data in list of lists format
+    :return: equivalent pandas dataframe
+    """
+    original_data = np.array(data)
+    columns = original_data[0, 1:]
+    index = original_data[1:, 0]
+    data = original_data[1:, 1:]
+
+    return pd.DataFrame.from_records(data=data, columns=columns, index=index)
+
+
+def get_all_obs_rain_hashids_from_curw_sim(pool):
+
+    grid_id_hash_id_mappings = {}
+
+    connection = pool.connection()
+    try:
+        with connection.cursor() as cursor:
+            sql_statement = "SELECT `id`, `grid_id` FROM `run` where `model`=%s;"
+            row_count = cursor.execute(sql_statement, "hechms")
+            if row_count > 0:
+                results = cursor.fetchall()
+                for dict in results:
+                    grid_id_hash_id_mappings[dict.get("grid_id")] = dict.get("id")
+                return grid_id_hash_id_mappings
+            else:
+                return None
+    except Exception as exception:
+        traceback.print_exc()
+    finally:
+        if connection is not None:
+            connection.close()
+
+
+def prepare_mike_rf_input(start, end):
+
+    index = pd.date_range(start=start, end=end, freq='15min')
+    df = pd.DataFrame(index=index)
+
+    try:
+        pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
+                        db=CURW_SIM_DATABASE)
+
+        print(json.dumps(get_all_obs_rain_hashids_from_curw_sim(pool)))
+
+    except Exception:
+        traceback.print_exc()
+    finally:
+        destroy_Pool(pool)
 
 
 def usage():
