@@ -132,11 +132,11 @@ def prepare_mike_rf_input(start, end, coefficients):
         TS = Timeseries(pool)
 
         obs_id_hash_id_mapping = get_all_obs_rain_hashids_from_curw_sim(pool)
-        print(json.dumps(obs_id_hash_id_mapping))
 
         for obs_id in distinct_obs_ids:
             print(obs_id)
             ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(str(obs_id)), start_date=start, end_date=end)
+            print(ts)
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
 
