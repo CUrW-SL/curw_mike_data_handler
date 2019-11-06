@@ -14,8 +14,9 @@ import numpy as np
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 from db_adapter.base import get_Pool, destroy_Pool
-from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_HOST, CURW_SIM_PASSWORD, CURW_SIM_PORT, CURW_SIM_USERNAME
-from db_adapter.curw_sim.grids import get_obs_to_d03_grid_mappings_for_rainfall
+
+from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_PASSWORD, CURW_SIM_USERNAME, CURW_SIM_PORT, CURW_SIM_HOST
+from db_adapter.curw_sim.timeseries import Timeseries
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 
@@ -82,36 +83,34 @@ def create_dir_if_not_exists(path):
     return path
 
 
-def list_of_lists_to_df_first_row_as_columns_first_column_as_index(data):
+def list_of_lists_to_df_first_row_as_columns(data):
     """
 
     :param data: data in list of lists format
     :return: equivalent pandas dataframe
     """
-    original_data = np.array(data)
-    columns = original_data[0, 1:]
-    index = original_data[1:, 0]
-    data = original_data[1:, 1:]
 
-    return pd.DataFrame.from_records(data=data, columns=columns, index=index)
+    return pd.DataFrame.from_records(data[1:], columns=data[0])
 
 
 def get_all_obs_rain_hashids_from_curw_sim(pool):
 
-    grid_id_hash_id_mappings = {}
+    obs_id_hash_id_mappings = {}
 
     expected_earliest_obs_end = (datetime.now() - timedelta(days=1)).strftime(COMMON_DATE_TIME_FORMAT)
 
     connection = pool.connection()
     try:
         with connection.cursor() as cursor:
-            sql_statement = "SELECT `id`, `grid_id`, `obs_end` FROM `run` where `model`=%s and `obs_end`>=%s;"
+            sql_statement = "SELECT `id`, `grid_id` FROM `run` where `model`=%s and `obs_end`>=%s;"
             row_count = cursor.execute(sql_statement, ("hechms", expected_earliest_obs_end))
             if row_count > 0:
                 results = cursor.fetchall()
                 for dict in results:
-                    grid_id_hash_id_mappings[dict.get("grid_id")] = [dict.get("id"), dict.get("obs_end")]
-                return grid_id_hash_id_mappings
+                    grid_id = dict.get("grid_id")
+                    grid_id_parts = grid_id.split("_")
+                    obs_id_hash_id_mappings[grid_id_parts[1]] = dict.get("id")
+                return obs_id_hash_id_mappings
             else:
                 return None
     except Exception as exception:
@@ -121,19 +120,30 @@ def get_all_obs_rain_hashids_from_curw_sim(pool):
             connection.close()
 
 
-def prepare_mike_rf_input(start, end):
+def prepare_mike_rf_input(start, end, coefficients):
 
-    index = pd.date_range(start=start, end=end, freq='15min')
-    df = pd.DataFrame(index=index)
+    distinct_obs_ids = coefficients.curw_obs_id.unique()
+    hybrid_ts_df = pd.DataFrame()
+    hybrid_ts_df_initialized = False
 
     try:
         pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
                         db=CURW_SIM_DATABASE)
+        TS = Timeseries(pool)
 
-        dict = get_all_obs_rain_hashids_from_curw_sim(pool)
+        obs_id_hash_id_mapping = get_all_obs_rain_hashids_from_curw_sim(pool)
 
-        for key in dict.keys():
-            print(dict.get(key))
+        for obs_id in distinct_obs_ids:
+            ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(str(obs_id)), start_date=start, end_date=end)
+            ts.insert(0, ['time', obs_id])
+            ts_df = list_of_lists_to_df_first_row_as_columns(ts)
+
+            if not hybrid_ts_df_initialized:
+                hybrid_ts_df = ts_df
+            else:
+                hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
+
+        print(hybrid_ts_df)
 
     except Exception:
         traceback.print_exc()
@@ -191,7 +201,9 @@ if __name__ == "__main__":
         else:
             check_time_format(time=end_time)
 
-        prepare_mike_rf_input(start=start_time, end=end_time)
+        coefficients = pd.read_csv('inputs/params/sb_rf_coefficients.csv', delimiter=',')
+
+        prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
 
         # if output_dir is not None and file_name is not None:
         #     mike_rf_file_path = os.path.join(output_dir, file_name)
