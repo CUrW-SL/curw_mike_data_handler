@@ -98,15 +98,17 @@ def get_all_obs_rain_hashids_from_curw_sim(pool):
 
     grid_id_hash_id_mappings = {}
 
+    expected_earliest_obs_end = (datetime.now() - timedelta(days=1)).strftime(COMMON_DATE_TIME_FORMAT)
+
     connection = pool.connection()
     try:
         with connection.cursor() as cursor:
-            sql_statement = "SELECT `id`, `grid_id` FROM `run` where `model`=%s;"
-            row_count = cursor.execute(sql_statement, "hechms")
+            sql_statement = "SELECT `id`, `grid_id`, `obs_end` FROM `run` where `model`=%s and `obs_end`>=%s;"
+            row_count = cursor.execute(sql_statement, ("hechms", expected_earliest_obs_end))
             if row_count > 0:
                 results = cursor.fetchall()
                 for dict in results:
-                    grid_id_hash_id_mappings[dict.get("grid_id")] = dict.get("id")
+                    grid_id_hash_id_mappings[dict.get("grid_id")] = [dict.get("id"), dict.get("obs_end")]
                 return grid_id_hash_id_mappings
             else:
                 return None
@@ -139,8 +141,8 @@ def usage():
     Usage: .\gen_mike_input_rf.py [-s "YYYY-MM-DD HH:MM:SS"] [-e "YYYY-MM-DD HH:MM:SS"]
 
     -h  --help          Show usage
-    -s  --start_time    Outflow start time (e.g: "2019-06-05 00:00:00"). Default is 00:00:00, 3 days before today.
-    -e  --end_time      Outflow end time (e.g: "2019-06-05 23:00:00"). Default is 00:00:00, 2 days after.
+    -s  --start_time    Mike rainfall timeseries start time (e.g: "2019-06-05 00:00:00"). Default is 00:00:00, 3 days before today.
+    -e  --end_time      Mike rainfall timeseries end time (e.g: "2019-06-05 23:00:00"). Default is 00:00:00, 2 days after.
     """
     print(usageText)
 
@@ -185,17 +187,17 @@ if __name__ == "__main__":
             check_time_format(time=end_time)
 
         if output_dir is not None and file_name is not None:
-            outflow_file_path = os.path.join(output_dir, file_name)
+            mike_rf_file_path = os.path.join(output_dir, file_name)
         else:
-            outflow_file_path = os.path.join(r"D:\curw_mike_data_handlers",
+            mike_rf_file_path = os.path.join(r"D:\curw_mike_data_handlers",
                                           'mike_rf_{}_{}.DAT'.format(start_time, end_time).replace(' ', '_').replace(':', '-'))
 
-        if not os.path.isfile(outflow_file_path):
+        if not os.path.isfile(mike_rf_file_path):
             print("{} start preparing outflow".format(datetime.now()))
 
             print("{} completed preparing outflow".format(datetime.now()))
         else:
-            print('Outflow file already in path : ', outflow_file_path)
+            print('Outflow file already in path : ', mike_rf_file_path)
 
     except Exception:
         traceback.print_exc()
