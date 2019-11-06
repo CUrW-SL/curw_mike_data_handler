@@ -130,7 +130,10 @@ def prepare_mike_rf_input(start, end):
         pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
                         db=CURW_SIM_DATABASE)
 
-        print(json.dumps(get_all_obs_rain_hashids_from_curw_sim(pool)))
+        dict = get_all_obs_rain_hashids_from_curw_sim(pool)
+
+        for key in dict.keys():
+            print(dict.get(key))
 
     except Exception:
         traceback.print_exc()
