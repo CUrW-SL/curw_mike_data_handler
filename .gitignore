@@ -2,6 +2,7 @@
 *.log.*
 */db_config.json
 */db_adapter_config.json
+db_adapter_config.json
 
 # Custom
 CONFIG.json
