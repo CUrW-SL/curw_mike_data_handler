@@ -1,4 +1,6 @@
-#!"D:\curw_mike_data_handlers\venv\Scripts\python.exe"
+#!/home/uwcc-admin/curw_mike_data_handlers/venv/bin/python3
+
+####!"D:\curw_mike_data_handlers\venv\Scripts\python.exe"
 import pymysql
 from datetime import datetime, timedelta
 import traceback
