@@ -141,10 +141,13 @@ def prepare_mike_rf_input(start, end, coefficients):
 
             if not hybrid_ts_df_initialized:
                 hybrid_ts_df = ts_df
+                hybrid_ts_df_initialized = True
             else:
                 hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
 
             print(hybrid_ts_df)
+
+        print(hybrid_ts_df)
 
     except Exception:
         traceback.print_exc()
