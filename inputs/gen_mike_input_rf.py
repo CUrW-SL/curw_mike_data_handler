@@ -188,18 +188,20 @@ if __name__ == "__main__":
         else:
             check_time_format(time=end_time)
 
-        if output_dir is not None and file_name is not None:
-            mike_rf_file_path = os.path.join(output_dir, file_name)
-        else:
-            mike_rf_file_path = os.path.join(r"D:\curw_mike_data_handlers",
-                                          'mike_rf_{}_{}.DAT'.format(start_time, end_time).replace(' ', '_').replace(':', '-'))
+        prepare_mike_rf_input(start=start_time, end=end_time)
 
-        if not os.path.isfile(mike_rf_file_path):
-            print("{} start preparing outflow".format(datetime.now()))
-
-            print("{} completed preparing outflow".format(datetime.now()))
-        else:
-            print('Outflow file already in path : ', mike_rf_file_path)
+        # if output_dir is not None and file_name is not None:
+        #     mike_rf_file_path = os.path.join(output_dir, file_name)
+        # else:
+        #     mike_rf_file_path = os.path.join(r"D:\curw_mike_data_handlers",
+        #                                   'mike_rf_{}_{}.DAT'.format(start_time, end_time).replace(' ', '_').replace(':', '-'))
+        #
+        # if not os.path.isfile(mike_rf_file_path):
+        #     print("{} start preparing mike rainfall input".format(datetime.now()))
+        #
+        #     print("{} completed preparing mike rainfall input".format(datetime.now()))
+        # else:
+        #     print('Mile rainfall input file already in path : ', mike_rf_file_path)
 
     except Exception:
         traceback.print_exc()
