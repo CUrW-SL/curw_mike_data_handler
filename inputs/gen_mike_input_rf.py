@@ -145,10 +145,8 @@ def prepare_mike_rf_input(start, end, coefficients):
             else:
                 hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
 
-            print(hybrid_ts_df)
-
+        pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
         print(hybrid_ts_df)
-
     except Exception:
         traceback.print_exc()
     finally:
