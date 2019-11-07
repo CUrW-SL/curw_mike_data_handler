@@ -94,8 +94,8 @@ def list_of_lists_to_df_first_row_as_columns(data):
 
 
 def replace_negative_numbers_with_nan(df):
-    df = df._get_numeric_data()
-    df[df < 0] = np.nan
+    num = df._get_numeric_data()
+    num[num < 0] = np.nan
     return df
 
 
@@ -163,8 +163,8 @@ def prepare_mike_rf_input(start, end, coefficients):
         pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         print(hybrid_ts_df)
 
-        hybrid_ts_df = replace_negative_numbers_with_nan(hybrid_ts_df)
-        hybrid_ts_df = replace_nan_with_row_average(hybrid_ts_df)
+        print(replace_negative_numbers_with_nan(hybrid_ts_df))
+        print(replace_nan_with_row_average(hybrid_ts_df))
 
         print(hybrid_ts_df)
 
