@@ -151,6 +151,7 @@ def prepare_mike_rf_input(start, end, coefficients):
             ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(str(obs_id)), start_date=start, end_date=end)
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
+            ts_df[[1]] = ts_df[[1]].astype('float64')
 
             if not hybrid_ts_df_initialized:
                 hybrid_ts_df = ts_df
@@ -163,8 +164,8 @@ def prepare_mike_rf_input(start, end, coefficients):
         pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         print(hybrid_ts_df)
 
-        print(replace_negative_numbers_with_nan(hybrid_ts_df))
-        print(replace_nan_with_row_average(hybrid_ts_df))
+        hybrid_ts_df = replace_negative_numbers_with_nan(hybrid_ts_df)
+        hybrid_ts_df = replace_nan_with_row_average(hybrid_ts_df)
 
         print(hybrid_ts_df)
 
