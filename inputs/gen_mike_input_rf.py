@@ -135,11 +135,13 @@ def get_all_obs_rain_hashids_from_curw_sim(pool):
 
 def prepare_mike_rf_input(start, end, coefficients):
 
-    distinct_obs_ids = coefficients.curw_obs_id.unique()
-    hybrid_ts_df = pd.DataFrame()
-    hybrid_ts_df_initialized = False
-
     try:
+
+        #### process staton based hybrid timeseries ####
+        distinct_obs_ids = coefficients.curw_obs_id.unique()
+        hybrid_ts_df = pd.DataFrame()
+        hybrid_ts_df_initialized = False
+
         pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
                         db=CURW_SIM_DATABASE)
         TS = Timeseries(pool)
@@ -165,9 +167,30 @@ def prepare_mike_rf_input(start, end, coefficients):
         print(hybrid_ts_df)
 
         hybrid_ts_df = replace_negative_numbers_with_nan(hybrid_ts_df)
+
+        print(hybrid_ts_df)
         hybrid_ts_df = replace_nan_with_row_average(hybrid_ts_df)
 
         print(hybrid_ts_df)
+
+        #### process mike input ####
+
+        distinct_names = coefficients.name.unique()
+        mike_input = pd.DataFrame()
+        mike_input_initialized = False
+
+        for name in distinct_names:
+            catchment_coefficients = coefficients[coefficients.name == name]
+            catchment = pd.DataFrame()
+            for index, row in catchment_coefficients.iterrows():
+                if index == 0 :
+                    catchment = hybrid_ts_df[row['curw_obs_id']] * row['coefficient']
+                else:
+                    pd.merge(catchment, (hybrid_ts_df[row['curw_obs_id']] * row['coefficient']), how="outer", on='time')
+
+            print(catchment)
+            break
+
 
     except Exception:
         traceback.print_exc()
