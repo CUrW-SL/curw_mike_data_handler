@@ -158,6 +158,7 @@ def prepare_mike_rf_input(start, end, coefficients):
             else:
                 hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
 
+        hybrid_ts_df.set_index('time', inplace=True)
         # pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
         pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         print(hybrid_ts_df)
