@@ -187,7 +187,9 @@ def prepare_mike_rf_input(start, end, coefficients):
                 if index == 0 :
                     catchment = hybrid_ts_df[row['curw_obs_id']] * row['coefficient']
                 else:
-                    pd.merge(catchment, (hybrid_ts_df[row['curw_obs_id']] * row['coefficient']), how="outer", left_on='time', right_on='time')
+                    new = hybrid_ts_df[row['curw_obs_id']] * row['coefficient']
+                    pd.merge(catchment, new , how="outer", on='time')
+                print(catchment)
 
             print(catchment)
             break
