@@ -94,8 +94,8 @@ def list_of_lists_to_df_first_row_as_columns(data):
 
 
 def replace_negative_numbers_with_nan(df):
-    num = df._get_numeric_data()
-    num[num < 0] = np.nan
+    df = df._get_numeric_data()
+    df[df < 0] = np.nan
     return df
 
 
