@@ -93,6 +93,19 @@ def list_of_lists_to_df_first_row_as_columns(data):
     return pd.DataFrame.from_records(data[1:], columns=data[0])
 
 
+def replace_negative_numbers_with_nan(df):
+    num = df._get_numeric_data()
+    num[num < 0] = np.nan
+    return df
+
+
+def replace_nan_with_row_average(df):
+    m = df.mean(axis=1)
+    for i, col in enumerate(df):
+        df.iloc[:, i] = df.iloc[:, i].fillna(m)
+    return df
+
+
 def get_all_obs_rain_hashids_from_curw_sim(pool):
 
     obs_id_hash_id_mappings = {}
@@ -146,7 +159,10 @@ def prepare_mike_rf_input(start, end, coefficients):
                 hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
 
         pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
+        pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         print(hybrid_ts_df)
+
+
     except Exception:
         traceback.print_exc()
     finally:
