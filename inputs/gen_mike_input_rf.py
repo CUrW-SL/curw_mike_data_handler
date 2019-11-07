@@ -164,14 +164,14 @@ def prepare_mike_rf_input(start, end, coefficients):
         hybrid_ts_df.set_index('time', inplace=True)
         # pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
         pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
-        print(hybrid_ts_df)
+        # print(hybrid_ts_df)
 
         hybrid_ts_df = replace_negative_numbers_with_nan(hybrid_ts_df)
 
-        print(hybrid_ts_df)
+        # print(hybrid_ts_df)
         hybrid_ts_df = replace_nan_with_row_average(hybrid_ts_df)
 
-        print(hybrid_ts_df)
+        # print(hybrid_ts_df)
 
         #### process mike input ####
 
@@ -183,6 +183,7 @@ def prepare_mike_rf_input(start, end, coefficients):
             catchment_coefficients = coefficients[coefficients.name == name]
             catchment = pd.DataFrame()
             for index, row in catchment_coefficients.iterrows():
+                print(index, row)
                 if index == 0 :
                     catchment = hybrid_ts_df[row['curw_obs_id']] * row['coefficient']
                 else:
