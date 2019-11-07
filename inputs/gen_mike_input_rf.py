@@ -158,10 +158,14 @@ def prepare_mike_rf_input(start, end, coefficients):
             else:
                 hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
 
-        pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
+        # pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
         pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         print(hybrid_ts_df)
 
+        hybrid_ts_df = replace_negative_numbers_with_nan(hybrid_ts_df)
+        hybrid_ts_df = replace_nan_with_row_average(hybrid_ts_df)
+
+        print(hybrid_ts_df)
 
     except Exception:
         traceback.print_exc()
