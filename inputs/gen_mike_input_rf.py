@@ -1,4 +1,4 @@
-#!/home/uwcc-admin/curw_mike_data_handler/venv/bin/python3
+#########!/home/uwcc-admin/curw_mike_data_handler/venv/bin/python3
 
 ####!"D:\curw_mike_data_handlers\venv\Scripts\python.exe"
 import pymysql
@@ -149,7 +149,6 @@ def prepare_mike_rf_input(start, end, coefficients):
         obs_id_hash_id_mapping = get_all_obs_rain_hashids_from_curw_sim(pool)
 
         for obs_id in distinct_obs_ids:
-            print(obs_id)
             ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(str(obs_id)), start_date=start, end_date=end)
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
@@ -183,13 +182,12 @@ def prepare_mike_rf_input(start, end, coefficients):
             catchment_coefficients = coefficients[coefficients.name == name]
             catchment = pd.DataFrame()
             for index, row in catchment_coefficients.iterrows():
-                print(index, row)
-                if index == 0 :
-                    catchment = hybrid_ts_df[row['curw_obs_id']] * row['coefficient']
+                print(index, row['curw_obs_id'], row['coefficient'])
+                if index==0:
+                    catchment = (hybrid_ts_df[row['curw_obs_id']] * row['coefficient']).to_frame(name=row['curw_obs_id'])
                 else:
-                    new = hybrid_ts_df[row['curw_obs_id']] * row['coefficient']
-                    pd.merge(catchment, new , how="outer", on='time')
-                print(catchment)
+                    new = (hybrid_ts_df[row['curw_obs_id']] * row['coefficient']).to_frame(name=row['curw_obs_id'])
+                    catchment = pd.merge(catchment, new, how="left", on='time')
 
             print(catchment)
             break
