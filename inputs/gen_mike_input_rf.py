@@ -158,7 +158,7 @@ def prepare_mike_rf_input(start, end, coefficients):
 
         hybrid_ts_df.set_index('time', inplace=True)
         # pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
-        pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
+        # pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         # print(hybrid_ts_df)
 
         hybrid_ts_df = replace_negative_numbers_with_nan(hybrid_ts_df)
@@ -176,18 +176,25 @@ def prepare_mike_rf_input(start, end, coefficients):
 
         for name in distinct_names:
             catchment_coefficients = coefficients[coefficients.name == name]
+            # print(catchment_coefficients)
             catchment = pd.DataFrame()
+            catchment_initialized = False
             for index, row in catchment_coefficients.iterrows():
-                print(index, row['curw_obs_id'], row['coefficient'])
-                if index==0:
+                # print(index, row['curw_obs_id'], row['coefficient'])
+                if not catchment_initialized:
                     catchment = (hybrid_ts_df[row['curw_obs_id']] * row['coefficient']).to_frame(name=row['curw_obs_id'])
+                    catchment_initialized = True
                 else:
                     new = (hybrid_ts_df[row['curw_obs_id']] * row['coefficient']).to_frame(name=row['curw_obs_id'])
                     catchment = pd.merge(catchment, new, how="left", on='time')
 
-            print(catchment)
-            break
+            if not mike_input_initialized:
+                mike_input[name] = catchment.sum(axis=1)
+                mike_input_initialized = True
+            else:
+                mike_input = pd.merge(mike_input, (catchment.sum(axis=1)).to_frame(name=name), how="left", on='time')
 
+        return mike_input
 
     except Exception:
         traceback.print_exc()
@@ -247,7 +254,7 @@ if __name__ == "__main__":
 
         coefficients = pd.read_csv('inputs/params/sb_rf_coefficients.csv', delimiter=',')
 
-        prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
+        mike_rainfall = prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
 
         # if output_dir is not None and file_name is not None:
         #     mike_rf_file_path = os.path.join(output_dir, file_name)
