@@ -140,7 +140,7 @@ def prepare_mike_rf_input(start, end, coefficients):
         #### process staton based hybrid timeseries ####
         distinct_obs_ids = coefficients.curw_obs_id.unique()
         hybrid_ts_df = pd.DataFrame()
-        hybrid_ts_df_initialized = False
+        hybrid_ts_df['time'] = pd.date_range(start=start, end=end, freq='{}min'.format(15))
 
         pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
                         db=CURW_SIM_DATABASE)
@@ -154,11 +154,7 @@ def prepare_mike_rf_input(start, end, coefficients):
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
             ts_df[obs_id] = ts_df[obs_id].astype('float64')
 
-            if not hybrid_ts_df_initialized:
-                hybrid_ts_df = ts_df
-                hybrid_ts_df_initialized = True
-            else:
-                hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="outer", on='time')
+            hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="left", on='time')
 
         hybrid_ts_df.set_index('time', inplace=True)
         # pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
