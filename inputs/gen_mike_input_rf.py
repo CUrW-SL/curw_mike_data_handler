@@ -237,7 +237,7 @@ if __name__ == "__main__":
                 end_time = arg.strip()
 
         # Load config params
-        config = json.loads(open('inputs/rain_config.json').read())
+        config = json.loads(open(os.path.join('inputs', 'rain_config.json')).read())
 
         output_dir = read_attribute_from_config_file('output_dir', config)
         file_name = read_attribute_from_config_file('output_file_name', config)
@@ -261,7 +261,7 @@ if __name__ == "__main__":
 
         if not os.path.isfile(mike_rf_file_path):
             print("{} start preparing mike rainfall input".format(datetime.now()))
-            coefficients = pd.read_csv('inputs/params/sb_rf_coefficients.csv', delimiter=',')
+            coefficients = pd.read_csv(os.path.join('inputs', 'params', 'sb_rf_coefficients.csv'), delimiter=',')
             mike_rainfall = prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
             mike_rainfall.to_csv(mike_rf_file_path, header=True, index=True)
             print("{} completed preparing mike rainfall input".format(datetime.now()))
