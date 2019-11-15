@@ -50,7 +50,7 @@ def read_attribute_from_config_file(attribute, config, compulsory=False):
         print("{} not specified in config file.".format(attribute))
         exit(1)
     else:
-        print("{} not specified in config file.".format(attribute))
+        # print("{} not specified in config file.".format(attribute))
         return None
 
 
@@ -252,22 +252,22 @@ if __name__ == "__main__":
         else:
             check_time_format(time=end_time)
 
-        coefficients = pd.read_csv('inputs/params/sb_rf_coefficients.csv', delimiter=',')
+        if output_dir is None:
+            output_dir = os.getcwd()
+        if file_name is None:
+            file_name = 'mike_rf_{}_{}.csv'.format(start_time, end_time).replace(' ', '_').replace(':', '-')
 
-        mike_rainfall = prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
+        mike_rf_file_path = os.path.join(output_dir, file_name)
 
-        # if output_dir is not None and file_name is not None:
-        #     mike_rf_file_path = os.path.join(output_dir, file_name)
-        # else:
-        #     mike_rf_file_path = os.path.join(r"D:\curw_mike_data_handlers",
-        #                                   'mike_rf_{}_{}.DAT'.format(start_time, end_time).replace(' ', '_').replace(':', '-'))
-        #
-        # if not os.path.isfile(mike_rf_file_path):
-        #     print("{} start preparing mike rainfall input".format(datetime.now()))
-        #
-        #     print("{} completed preparing mike rainfall input".format(datetime.now()))
-        # else:
-        #     print('Mile rainfall input file already in path : ', mike_rf_file_path)
+        if not os.path.isfile(mike_rf_file_path):
+            print("{} start preparing mike rainfall input".format(datetime.now()))
+            coefficients = pd.read_csv('inputs/params/sb_rf_coefficients.csv', delimiter=',')
+            mike_rainfall = prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
+            mike_rainfall.to_csv(mike_rf_file_path, header=True, index=True)
+            print("{} completed preparing mike rainfall input".format(datetime.now()))
+            print("Mike input rainfall file is available at {}".format(mike_rf_file_path))
+        else:
+            print('Mike rainfall input file already in path : ', mike_rf_file_path)
 
     except Exception:
         traceback.print_exc()
