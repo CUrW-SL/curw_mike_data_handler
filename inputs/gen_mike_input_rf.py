@@ -255,7 +255,7 @@ if __name__ == "__main__":
         if output_dir is None:
             output_dir = os.getcwd()
         if file_name is None:
-            file_name = 'mike_rf_{}_{}.csv'.format(start_time, end_time).replace(' ', '_').replace(':', '-')
+            file_name = 'mike_rf_{}_{}.txt'.format(start_time, end_time).replace(' ', '_').replace(':', '-')
 
         mike_rf_file_path = os.path.join(output_dir, file_name)
 
