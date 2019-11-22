@@ -153,6 +153,7 @@ def prepare_mike_rf_input(start, end, coefficients):
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
             ts_df[obs_id] = ts_df[obs_id].astype('float64')
+            ts_df[obs_id] = ts_df[obs_id].resample('15min', on='time', label='right', closed='right').sum()
 
             hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="left", on='time')
 
@@ -217,7 +218,6 @@ if __name__ == "__main__":
 
     try:
 
-        print("started creating rainfall input for mike")
         start_time = None
         end_time = None
 
