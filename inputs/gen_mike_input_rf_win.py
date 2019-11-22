@@ -138,7 +138,7 @@ def prepare_mike_rf_input(start, end, coefficients):
         #### process staton based hybrid timeseries ####
         distinct_obs_ids = coefficients.curw_obs_id.unique()
         hybrid_ts_df = pd.DataFrame()
-        hybrid_ts_df['time'] = pd.date_range(start=start, end=end, freq='{}min'.format(15))
+        hybrid_ts_df['time'] = pd.date_range(start=start, end=end, freq='5min')
 
         pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
                         db=CURW_SIM_DATABASE)
@@ -151,11 +151,12 @@ def prepare_mike_rf_input(start, end, coefficients):
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
             ts_df[obs_id] = ts_df[obs_id].astype('float64')
-            ts_df[obs_id] = ts_df[obs_id].resample('15min', on='time', label='right', closed='right').sum()
 
             hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="left", on='time')
 
         hybrid_ts_df.set_index('time', inplace=True)
+        hybrid_ts_df = hybrid_ts_df.resample('15min', label='right', closed='right').sum()
+
         # pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
         # pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
         # print(hybrid_ts_df)
@@ -253,7 +254,7 @@ if __name__ == "__main__":
         if output_dir is None:
             output_dir = os.getcwd()
         if file_name is None:
-            file_name = 'mike_rf_{}_{}.csv'.format(start_time, end_time).replace(' ', '_').replace(':', '-')
+            file_name = 'mike_rf_{}_{}.txt'.format(start_time, end_time).replace(' ', '_').replace(':', '-')
 
         mike_rf_file_path = os.path.join(output_dir, file_name)
 
