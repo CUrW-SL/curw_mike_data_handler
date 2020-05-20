@@ -61,16 +61,12 @@ def check_time_format(time):
         exit(1)
 
 
-def create_dir_if_not_exists(path):
-    """
-    create directory(if needed recursively) or paths
-    :param path: string : directory path
-    :return: string
-    """
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-    return path
+def makedir_if_not_exist_given_filepath(filename):
+    if not os.path.exists(os.path.dirname(filename)):
+        try:
+            os.makedirs(os.path.dirname(filename))
+        except OSError as exc:  # Guard against race condition
+            pass
 
 
 def list_of_lists_to_df_first_row_as_columns(data):
@@ -186,6 +182,7 @@ if __name__ == "__main__":
         mike_dis_file_path = os.path.join(output_dir, file_name)
 
         if not os.path.isfile(mike_dis_file_path):
+            makedir_if_not_exist_given_filepath(mike_dis_file_path)
             print("{} start preparing mike rainfall input".format(datetime.now()))
             mike_discharge = prepare_mike_dis_input(start=start_time, end=end_time, dis_id=dis_id)
             mike_discharge.to_csv(mike_dis_file_path, header=False, index=True)

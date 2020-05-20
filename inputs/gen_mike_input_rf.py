@@ -40,6 +40,14 @@ def append_file_to_file(file_name, file_content):
         f.write(file_content)
 
 
+def makedir_if_not_exist_given_filepath(filename):
+    if not os.path.exists(os.path.dirname(filename)):
+        try:
+            os.makedirs(os.path.dirname(filename))
+        except OSError as exc:  # Guard against race condition
+            pass
+
+
 def read_attribute_from_config_file(attribute, config, compulsory=False):
     """
     :param attribute: key name of the config json file
@@ -73,18 +81,6 @@ def check_time_format(time):
     except Exception:
         print("Time {} is not in proper format".format(time))
         exit(1)
-
-
-def create_dir_if_not_exists(path):
-    """
-    create directory(if needed recursively) or paths
-    :param path: string : directory path
-    :return: string
-    """
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-    return path
 
 
 def list_of_lists_to_df_first_row_as_columns(data):
@@ -270,6 +266,7 @@ if __name__ == "__main__":
         mike_rf_file_path = os.path.join(output_dir, file_name)
 
         if not os.path.isfile(mike_rf_file_path):
+            makedir_if_not_exist_given_filepath(mike_rf_file_path)
             print("{} start preparing mike rainfall input".format(datetime.now()))
             coefficients = pd.read_csv(os.path.join('inputs', 'params', 'sb_rf_coefficients.csv'), delimiter=',')
             mike_rainfall = prepare_mike_rf_input(start=start_time, end=end_time, coefficients=coefficients)
