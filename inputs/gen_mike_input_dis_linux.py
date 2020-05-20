@@ -85,17 +85,12 @@ def replace_negative_numbers_with_nan(df):
     return df
 
 
-def prepare_mike_dis_input(start, end, dis_id):
+def prepare_mike_dis_input(TS, start, end, dis_id):
 
     try:
 
         dis_ts_df = pd.DataFrame()
         dis_ts_df['time'] = pd.date_range(start=start, end=end, freq='15min')
-
-        pool = get_Pool(host=con_params.CURW_SIM_HOST, port=con_params.CURW_SIM_PORT, user=con_params.CURW_SIM_USERNAME,
-                        password=con_params.CURW_SIM_PASSWORD,
-                        db=con_params.CURW_SIM_DATABASE)
-        TS = Timeseries(pool)
 
         ts = TS.get_timeseries(id_=dis_id, start_date=start, end_date=end)
         ts.insert(0, ['time', 'value'])
@@ -174,17 +169,24 @@ if __name__ == "__main__":
         else:
             check_time_format(time=end_time)
 
+        pool = get_Pool(host=con_params.CURW_SIM_HOST, port=con_params.CURW_SIM_PORT, user=con_params.CURW_SIM_USERNAME,
+                        password=con_params.CURW_SIM_PASSWORD,
+                        db=con_params.CURW_SIM_DATABASE)
+        TS = Timeseries(pool)
+
+        latest_fgt = TS.get_obs_end(dis_id)
+
         if output_dir is None:
             output_dir = os.path.join(OUTPUT_DIRECTORY, (datetime.utcnow() + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d_%H-00-00'))
         if file_name is None:
-            file_name = 'mike_dis.txt'
+            file_name = 'mike_dis_{}.txt'.format(latest_fgt.strftime('%Y-%m-%d_%H-%M-00'))
 
         mike_dis_file_path = os.path.join(output_dir, file_name)
 
         if not os.path.isfile(mike_dis_file_path):
             makedir_if_not_exist_given_filepath(mike_dis_file_path)
             print("{} start preparing mike rainfall input".format(datetime.now()))
-            mike_discharge = prepare_mike_dis_input(start=start_time, end=end_time, dis_id=dis_id)
+            mike_discharge = prepare_mike_dis_input(TS=TS, start=start_time, end=end_time, dis_id=dis_id)
             mike_discharge.to_csv(mike_dis_file_path, header=False, index=True)
             print("{} completed preparing mike rainfall input".format(datetime.now()))
             print("Mike input rainfall file is available at {}".format(mike_dis_file_path))
