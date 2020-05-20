@@ -1,6 +1,6 @@
-#########!/home/uwcc-admin/curw_mike_data_handler/venv/bin/python3
+#!/home/uwcc-admin/curw_mike_data_handler/venv/bin/python3
+"only she bang, root dir, output dir and filename are different from generic one"
 
-####!"D:\curw_mike_data_handlers\venv\Scripts\python.exe"
 import pymysql
 from datetime import datetime, timedelta
 import traceback
@@ -13,11 +13,17 @@ import numpy as np
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+from db_adapter.constants import set_db_config_file_path
+from db_adapter.constants import connection as con_params
 from db_adapter.base import get_Pool, destroy_Pool
 
 from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_PASSWORD, CURW_SIM_USERNAME, CURW_SIM_PORT, CURW_SIM_HOST
 from db_adapter.curw_sim.timeseries.discharge import Timeseries
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
+
+ROOT_DIRECTORY = '/home/uwcc-admin/curw_mike_data_handler'
+# ROOT_DIRECTORY = 'D:\curw_mike_data_handlers'
+OUTPUT_DIRECTORY = "/mnt/disks/curwsl_nfs/mike/inputs"
 
 
 def read_attribute_from_config_file(attribute, config, compulsory=False):
@@ -90,8 +96,9 @@ def prepare_mike_dis_input(start, end, dis_id):
         dis_ts_df = pd.DataFrame()
         dis_ts_df['time'] = pd.date_range(start=start, end=end, freq='15min')
 
-        pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
-                        db=CURW_SIM_DATABASE)
+        pool = get_Pool(host=con_params.CURW_SIM_HOST, port=con_params.CURW_SIM_PORT, user=con_params.CURW_SIM_USERNAME,
+                        password=con_params.CURW_SIM_PASSWORD,
+                        db=con_params.CURW_SIM_DATABASE)
         TS = Timeseries(pool)
 
         ts = TS.get_timeseries(id_=dis_id, start_date=start, end_date=end)
@@ -130,6 +137,8 @@ def usage():
 
 
 if __name__ == "__main__":
+
+    set_db_config_file_path(os.path.join(ROOT_DIRECTORY, 'db_adapter_config.json'))
 
     try:
 
@@ -170,9 +179,9 @@ if __name__ == "__main__":
             check_time_format(time=end_time)
 
         if output_dir is None:
-            output_dir = os.getcwd()
+            output_dir = os.path.join(OUTPUT_DIRECTORY, datetime.now().strftime('%Y-%m-%d_%H-00-00'))
         if file_name is None:
-            file_name = 'mike_dis_{}_{}.txt'.format(start_time, end_time).replace(' ', '_').replace(':', '-')
+            file_name = 'mike_dis.txt'
 
         mike_dis_file_path = os.path.join(output_dir, file_name)
 
