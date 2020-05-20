@@ -38,6 +38,10 @@ echo "Preparing input rain for mike ..."
 echo "Preparing input discharge for mike ..."
 ./inputs/gen_mike_input_dis_linux.py >> inputs/mike_input_dis.log 2>&1
 
+# prepare mike input tide
+echo "Preparing input tide for mike ..."
+./inputs/gen_mike_input_tide_linux.py >> inputs/mike_input_tide.log 2>&1
+
 # Deactivating virtual environment
 echo "Deactivating virtual environment"
 deactivate
