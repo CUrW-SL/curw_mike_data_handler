@@ -18,7 +18,7 @@ from db_adapter.constants import connection as con_params
 from db_adapter.base import get_Pool, destroy_Pool
 
 from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_PASSWORD, CURW_SIM_USERNAME, CURW_SIM_PORT, CURW_SIM_HOST
-from db_adapter.curw_sim.timeseries.discharge import Timeseries
+from db_adapter.curw_sim.timeseries.tide import Timeseries
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 ROOT_DIRECTORY = '/home/uwcc-admin/curw_mike_data_handler'
