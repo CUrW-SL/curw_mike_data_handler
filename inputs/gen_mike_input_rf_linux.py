@@ -201,6 +201,7 @@ def prepare_mike_rf_input(start, end, coefficients):
             else:
                 mike_input = pd.merge(mike_input, (catchment.sum(axis=1)).to_frame(name=name), how="left", on='time')
 
+        mike_input.round(1)
         return mike_input
 
     except Exception:
