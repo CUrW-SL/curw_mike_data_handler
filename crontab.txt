@@ -1,0 +1,5 @@
+###############
+# MIKE INPUTS #
+###############
+# prepare mike inputs hourly
+30 * * * * /home/uwcc-admin/curw_mike_data_handler/inputs/prep_mike_inputs.sh >> /home/uwcc-admin/curw_mike_data_handler/inputs/mike_inputs.log 2>&1
