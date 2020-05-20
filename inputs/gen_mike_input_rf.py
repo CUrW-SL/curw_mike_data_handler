@@ -13,12 +13,16 @@ import numpy as np
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+from db_adapter.constants import set_db_config_file_path
+from db_adapter.constants import connection as con_params
 from db_adapter.base import get_Pool, destroy_Pool
 
 from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_PASSWORD, CURW_SIM_USERNAME, CURW_SIM_PORT, CURW_SIM_HOST
 from db_adapter.curw_sim.timeseries import Timeseries
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
+ROOT_DIRECTORY = '/home/uwcc-admin/curw_mike_data_handler'
+# ROOT_DIRECTORY = 'D:\curw_mike_data_handlers'
 
 def write_to_file(file_name, data):
     with open(file_name, 'w+') as f:
@@ -142,8 +146,10 @@ def prepare_mike_rf_input(start, end, coefficients):
         hybrid_ts_df = pd.DataFrame()
         hybrid_ts_df['time'] = pd.date_range(start=start, end=end, freq='5min')
 
-        pool = get_Pool(host=CURW_SIM_HOST, port=CURW_SIM_PORT, user=CURW_SIM_USERNAME, password=CURW_SIM_PASSWORD,
-                        db=CURW_SIM_DATABASE)
+        pool = get_Pool(host=con_params.CURW_SIM_HOST, port=con_params.CURW_SIM_PORT, user=con_params.CURW_SIM_USERNAME,
+                        password=con_params.CURW_SIM_PASSWORD,
+                        db=con_params.CURW_SIM_DATABASE)
+
         TS = Timeseries(pool)
 
         obs_id_hash_id_mapping = get_all_obs_rain_hashids_from_curw_sim(pool)
@@ -217,6 +223,8 @@ def usage():
 
 
 if __name__ == "__main__":
+
+    set_db_config_file_path(os.path.join(ROOT_DIRECTORY, 'db_adapter_config.json'))
 
     try:
 
