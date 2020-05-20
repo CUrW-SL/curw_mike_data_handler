@@ -175,7 +175,7 @@ if __name__ == "__main__":
             check_time_format(time=end_time)
 
         if output_dir is None:
-            output_dir = os.path.join(OUTPUT_DIRECTORY, datetime.now().strftime('%Y-%m-%d_%H-00-00'))
+            output_dir = os.path.join(OUTPUT_DIRECTORY, (datetime.utcnow() + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d_%H-00-00'))
         if file_name is None:
             file_name = 'mike_dis.txt'
 
