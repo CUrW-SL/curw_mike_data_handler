@@ -96,14 +96,15 @@ def prepare_mike_dis_input(start, end, tide_id):
         ts = TS.get_timeseries(id_=tide_id, start_date=start, end_date=end)
         ts.insert(0, ['time', 'value'])
         ts_df = list_of_lists_to_df_first_row_as_columns(ts)
+        ts_df['value'] = ts_df['value'].astype('float64')
 
         ts_df.set_index('time', inplace=True)
 
-        print(type(ts[3][1]))
+        ts_df = replace_negative_numbers_with_nan(ts_df)
 
-        selected_df = ts_df[ts_df.value != -99999.000]
+        ts_df = ts_df.dropna()
 
-        return selected_df
+        return ts_df
 
     except Exception:
         traceback.print_exc()
