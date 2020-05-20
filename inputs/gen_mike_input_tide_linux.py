@@ -100,11 +100,9 @@ def prepare_mike_dis_input(start, end, tide_id):
 
         ts_df.set_index('time', inplace=True)
 
-        ts_df = replace_negative_numbers_with_nan(ts_df)
+        selected_df = ts_df[ts_df.value != -99999.000]
 
-        ts_df = ts_df.dropna()
-
-        return ts_df
+        return selected_df
 
     except Exception:
         traceback.print_exc()
