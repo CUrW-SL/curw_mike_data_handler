@@ -101,7 +101,7 @@ def prepare_mike_dis_input(start, end, tide_id):
 
         ts_df = replace_negative_numbers_with_nan(ts_df)
 
-        ts_df.dropna()
+        ts_df = ts_df.dropna()
 
         return ts_df
 
