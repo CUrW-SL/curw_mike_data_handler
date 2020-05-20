@@ -99,7 +99,7 @@ def prepare_mike_dis_input(start, end, tide_id):
 
         ts_df.set_index('time', inplace=True)
 
-        print(type(ts[3][0]))
+        print(type(ts[3][1]))
 
         selected_df = ts_df[ts_df.value != -99999.000]
 
