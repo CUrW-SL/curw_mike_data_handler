@@ -94,6 +94,7 @@ def prepare_mike_dis_input(start, end, tide_id):
         TS = Timeseries(pool)
 
         ts = TS.get_timeseries(id_=tide_id, start_date=start, end_date=end)
+        ts.insert(0, ['time', 'value'])
         ts_df = list_of_lists_to_df_first_row_as_columns(ts)
 
         ts_df.set_index('time', inplace=True)
