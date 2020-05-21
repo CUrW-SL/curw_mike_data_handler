@@ -105,8 +105,8 @@ def usage():
     Extract MIKE output waterlevel to the curw_fcst database.
     -----------------------------------------------------------------------------
     
-    Usage: .\output\extract_water_level.py [-m mike11_XXX] [-t XXX]
-    [-d "/mnt/disks/curwsl_nfs/mike/outputs] [-E]
+    Usage: ./outputs/extract_water_level.py [-m mike11_XXX] [-t XXX]
+    [-d "/mnt/disks/curwsl_nfs/mike/outputs"] [-E]
 
     -h  --help          Show usage
     -m  --model         MIKE11 model (e.g. mike11_2016).
@@ -166,7 +166,7 @@ if __name__ == "__main__":
             elif opt in ("-E", "--event_sim"):
                 event_sim = True
 
-        config = json.loads(open(os.path.join(ROOT_DIRECTORY, 'output', 'wl_config.json')).read())
+        config = json.loads(open(os.path.join(ROOT_DIRECTORY, 'outputs', 'wl_config.json')).read())
 
         # flo2D related details
         OUTPUT_FILE = read_attribute_from_config_file('OUTPUT_FILE', config, True)
