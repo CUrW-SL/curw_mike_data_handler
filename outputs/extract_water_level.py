@@ -238,7 +238,7 @@ if __name__ == "__main__":
             traceback.print_exc()
             exit(1)
 
-        fgt = get_file_last_modified_time(output_file_path)
+        fgt = "2020-05-20 15:00:00" #get_file_last_modified_time(output_file_path)
 
         output_df = pd.read_csv(output_file_path, delimiter=',')
         output_df.set_index('Time Stamp', inplace=True)
