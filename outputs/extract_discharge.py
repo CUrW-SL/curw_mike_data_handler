@@ -109,7 +109,7 @@ def usage():
     Extract MIKE output discharge to the curw_fcst database.
     -----------------------------------------------------------------------------
     
-    Usage: ./outputs/extract_discharge.py [-m mike11_XXX] [-t XXX]
+    Usage: ./outputs/extract_discharge.py [-m mike11_XXX] [-t XXX] [-f "YYYY-MM-DD HH:MM:SS"]
     [-d "/mnt/disks/curwsl_nfs/mike/outputs"] [-E]
 
     -h  --help          Show usage
@@ -117,6 +117,7 @@ def usage():
     -d  --dir           Output directory (e.g. "/mnt/disks/curwsl_nfs/mike/outputs"); 
                         Directory where HYCHAN.OUT and TIMDEP.OUT files located.
     -t  --sim_tag       Simulation tag
+    -f  --fgt           Forecast generated time in "YYYY-MM-DD HH:MM:SS" format(e.g. "2020-05-18 03:00:00")
     -E  --event_sim     Weather the output should be extracted to event database or not (e.g. -E, --event_sim)
     """
     print(usageText)
@@ -149,11 +150,12 @@ if __name__ == "__main__":
         mike_model = None
         output_dir = None
         sim_tag = None
+        fgt = None
         event_sim = False
 
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "h:m:d:t:E",
-                                       ["help", "model=", "dir=", "sim_tag=", "event_sim"])
+            opts, args = getopt.getopt(sys.argv[1:], "h:m:d:t:f:E",
+                                       ["help", "model=", "dir=", "sim_tag=", "fgt=", "event_sim"])
         except getopt.GetoptError:
             usage()
             sys.exit(2)
@@ -167,6 +169,8 @@ if __name__ == "__main__":
                 output_dir = arg.strip()
             elif opt in ("-t", "--sim_tag"):
                 sim_tag = arg.strip()
+            elif opt in ("-f", "--fgt"):
+                fgt = arg.strip()
             elif opt in ("-E", "--event_sim"):
                 event_sim = True
 
@@ -238,7 +242,8 @@ if __name__ == "__main__":
             traceback.print_exc()
             exit(1)
 
-        fgt = get_file_last_modified_time(output_file_path)
+        if fgt is None:
+            fgt = get_file_last_modified_time(output_file_path)
 
         output_df = pd.read_csv(output_file_path, delimiter=',')
         output_df.set_index('Time Stamp', inplace=True)
