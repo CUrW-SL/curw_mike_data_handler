@@ -242,7 +242,7 @@ if __name__ == "__main__":
 
         output_df = pd.read_csv(output_file_path, delimiter=',')
         output_df.set_index('Time Stamp', inplace=True)
-        output_df.round(3)
+        output_df = output_df.round(3)
 
         # Push timeseries to database
         save_forecast_timeseries_to_db(pool=pool, output=output_df, mike_stations=mike_stations, fgt=fgt, tms_meta=tms_meta)
