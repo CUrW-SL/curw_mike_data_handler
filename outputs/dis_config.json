@@ -1,0 +1,14 @@
+{
+  "OUTPUT_FILE": "resmike11_Discharge.csv",
+
+  "utc_offset": "",
+
+  "sim_tag": "daily_run",
+
+  "model": "MIKE11",
+
+  "unit": "m3/s",
+  "unit_type": "Instantaneous",
+
+  "variable": "Discharge"
+}
