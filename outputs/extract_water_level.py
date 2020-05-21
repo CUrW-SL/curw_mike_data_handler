@@ -73,31 +73,35 @@ def save_forecast_timeseries_to_db(pool, output, mike_stations, fgt, tms_meta):
 
     # iterating the stations
     for station in output.columns:
-        ts = output[station].reset_index().values.tolist()  # including index
 
-        tms_meta['latitude'] = str(mike_stations.get(station)[1])
-        tms_meta['longitude'] = str(mike_stations.get(station)[2])
-        tms_meta['station_id'] = mike_stations.get(station)[0]
+        if station in mike_stations.keys():
+            ts = output[station].reset_index().values.tolist()  # including index
 
-        try:
+            tms_meta['latitude'] = str(mike_stations.get(station)[1])
+            tms_meta['longitude'] = str(mike_stations.get(station)[2])
+            tms_meta['station_id'] = mike_stations.get(station)[0]
 
-            TS = Timeseries(pool=pool)
+            try:
 
-            tms_id = TS.get_timeseries_id_if_exists(meta_data=tms_meta)
+                TS = Timeseries(pool=pool)
 
-            if tms_id is None:
-                tms_id = TS.generate_timeseries_id(meta_data=tms_meta)
-                tms_meta['tms_id'] = tms_id
-                TS.insert_run(run_meta=tms_meta)
-                TS.update_start_date(id_=tms_id, start_date=fgt)
+                tms_id = TS.get_timeseries_id_if_exists(meta_data=tms_meta)
 
-            TS.insert_data(timeseries=ts, tms_id=tms_id, fgt=fgt, upsert=True)
-            TS.update_latest_fgt(id_=tms_id, fgt=fgt)
+                if tms_id is None:
+                    tms_id = TS.generate_timeseries_id(meta_data=tms_meta)
+                    tms_meta['tms_id'] = tms_id
+                    TS.insert_run(run_meta=tms_meta)
+                    TS.update_start_date(id_=tms_id, start_date=fgt)
 
-        except Exception:
-            logger.error("Exception occurred while pushing data to the curw_fcst database")
-            traceback.print_exc()
+                TS.insert_data(timeseries=ts, tms_id=tms_id, fgt=fgt, upsert=True)
+                TS.update_latest_fgt(id_=tms_id, fgt=fgt)
 
+            except Exception:
+                logger.error("Exception occurred while pushing data to the curw_fcst database")
+                traceback.print_exc()
+
+        else:
+            print("### {} not included in the database. ###".format(station))
 
 def usage():
     usageText = """
@@ -238,6 +242,7 @@ if __name__ == "__main__":
 
         output_df = pd.read_csv(output_file_path, delimiter=',')
         output_df.set_index('Time Stamp', inplace=True)
+        output_df.round(3)
 
         # Push timeseries to database
         save_forecast_timeseries_to_db(pool=pool, output=output_df, mike_stations=mike_stations, fgt=fgt, tms_meta=tms_meta)
