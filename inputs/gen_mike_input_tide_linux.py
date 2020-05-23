@@ -101,6 +101,8 @@ def prepare_mike_dis_input(start, end, tide_id):
         ts_df.set_index('time', inplace=True)
 
         ts_df = replace_negative_numbers_with_nan(ts_df)
+        if ts_df.iloc[-1, 0] is np.nan :
+            ts_df.iloc[-1, 0] = 0
 
         ts_df = ts_df.dropna()
 
