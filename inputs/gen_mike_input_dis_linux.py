@@ -100,7 +100,7 @@ def prepare_mike_dis_input(TS, start, end, dis_id):
 
         dis_ts_df.set_index('time', inplace=True)
 
-        if dis_ts_df.iloc[-1, 0] is np.nan or dis_ts_df.iloc[-1, 0] < 0:
+        if np.isnan(dis_ts_df.iloc[-1, 0]) or dis_ts_df.iloc[-1, 0] < 0:
             dis_ts_df.iloc[-1, 0] = 0
 
         dis_ts_df.dropna()

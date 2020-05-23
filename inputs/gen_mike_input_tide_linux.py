@@ -106,10 +106,8 @@ def prepare_mike_dis_input(start, end, tide_id):
         tide_ts_df.set_index('time', inplace=True)
 
         processed_tide_ts_df = replace_negative_99999_with_nan(tide_ts_df)
-        print(type(processed_tide_ts_df.iloc[-1, 0]))
 
         if np.isnan(processed_tide_ts_df.iloc[-1, 0]) :
-            print(processed_tide_ts_df.iloc[-1, :])
             processed_tide_ts_df.iloc[-1, 0] = 0
 
         processed_tide_ts_df = processed_tide_ts_df.dropna()
