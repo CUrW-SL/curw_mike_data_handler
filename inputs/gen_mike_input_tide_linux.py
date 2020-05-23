@@ -79,34 +79,40 @@ def list_of_lists_to_df_first_row_as_columns(data):
     return pd.DataFrame.from_records(data[1:], columns=data[0])
 
 
-def replace_negative_numbers_with_nan(df):
+def replace_negative_99999_with_nan(df):
     num = df._get_numeric_data()
-    num[num < 0] = np.nan
+    num[num == -99999.000] = np.nan
     return df
 
 
 def prepare_mike_dis_input(start, end, tide_id):
 
     try:
+
         pool = get_Pool(host=con_params.CURW_SIM_HOST, port=con_params.CURW_SIM_PORT, user=con_params.CURW_SIM_USERNAME,
                         password=con_params.CURW_SIM_PASSWORD,
                         db=con_params.CURW_SIM_DATABASE)
         TS = Timeseries(pool)
-
         ts = TS.get_timeseries(id_=tide_id, start_date=start, end_date=end)
         ts.insert(0, ['time', 'value'])
         ts_df = list_of_lists_to_df_first_row_as_columns(ts)
         ts_df['value'] = ts_df['value'].astype('float64')
 
-        ts_df.set_index('time', inplace=True)
+        tide_ts_df = pd.DataFrame()
+        tide_ts_df['time'] = pd.date_range(start=start, end=end, freq='15min')
 
-        ts_df = replace_negative_numbers_with_nan(ts_df)
-        if ts_df.iloc[-1, 0] is np.nan :
-            ts_df.iloc[-1, 0] = 0
+        tide_ts_df = pd.merge(tide_ts_df, ts_df, how="left", on='time')
 
-        ts_df = ts_df.dropna()
+        tide_ts_df.set_index('time', inplace=True)
 
-        return ts_df
+        tide_ts_df = replace_negative_99999_with_nan(tide_ts_df)
+
+        if tide_ts_df.iloc[-1, 0] is np.nan:
+            tide_ts_df.iloc[-1, 0] = 0
+
+        tide_ts_df = ts_df.dropna()
+
+        return tide_ts_df
 
     except Exception:
         traceback.print_exc()
