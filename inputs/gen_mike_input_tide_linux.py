@@ -106,9 +106,9 @@ def prepare_mike_dis_input(start, end, tide_id):
         tide_ts_df.set_index('time', inplace=True)
 
         processed_tide_ts_df = replace_negative_99999_with_nan(tide_ts_df)
-        print(processed_tide_ts_df)
+        print(processed_tide_ts_df.iloc[-1, 0])
 
-        if processed_tide_ts_df.iloc[-1, 0] is np.nan:
+        if processed_tide_ts_df.iloc[-1, 0] == np.nan:
             print(processed_tide_ts_df.iloc[-1, :])
             processed_tide_ts_df.iloc[-1, 0] = 0
 
