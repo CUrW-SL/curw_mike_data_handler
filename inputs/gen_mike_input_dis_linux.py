@@ -182,13 +182,13 @@ if __name__ == "__main__":
 
         if not os.path.isfile(mike_dis_file_path):
             makedir_if_not_exist_given_filepath(mike_dis_file_path)
-            print("{} start preparing mike rainfall input".format(datetime.now()))
+            print("{} start preparing mike discharge input".format(datetime.now()))
             mike_discharge = prepare_mike_dis_input(TS=TS, start=start_time, end=end_time, dis_id=dis_id)
             mike_discharge.to_csv(mike_dis_file_path, header=False, index=True)
-            print("{} completed preparing mike rainfall input".format(datetime.now()))
-            print("Mike input rainfall file is available at {}".format(mike_dis_file_path))
+            print("{} completed preparing mike discharge input".format(datetime.now()))
+            print("Mike input discharge file is available at {}".format(mike_dis_file_path))
         else:
-            print('Mike rainfall input file already in path : ', mike_dis_file_path)
+            print('Mike discharge input file already in path : ', mike_dis_file_path)
 
     except Exception:
         traceback.print_exc()

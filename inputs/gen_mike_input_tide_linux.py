@@ -106,9 +106,9 @@ def prepare_mike_dis_input(start, end, tide_id):
         tide_ts_df.set_index('time', inplace=True)
 
         processed_tide_ts_df = replace_negative_99999_with_nan(tide_ts_df)
-        print(processed_tide_ts_df.iloc[-1, 0])
+        print(type(processed_tide_ts_df.iloc[-1, 0]))
 
-        if processed_tide_ts_df.iloc[-1, 0] == np.nan:
+        if processed_tide_ts_df.iloc[-1, 0] is np.NAN:
             print(processed_tide_ts_df.iloc[-1, :])
             processed_tide_ts_df.iloc[-1, 0] = 0
 
@@ -184,13 +184,13 @@ if __name__ == "__main__":
 
         if not os.path.isfile(mike_tide_file_path):
             makedir_if_not_exist_given_filepath(mike_tide_file_path)
-            print("{} start preparing mike rainfall input".format(datetime.now()))
+            print("{} start preparing mike tide input".format(datetime.now()))
             mike_discharge = prepare_mike_dis_input(start=start_time, end=end_time, tide_id=tide_id)
             mike_discharge.to_csv(mike_tide_file_path, header=False, index=True)
-            print("{} completed preparing mike rainfall input".format(datetime.now()))
-            print("Mike input rainfall file is available at {}".format(mike_tide_file_path))
+            print("{} completed preparing mike tide input".format(datetime.now()))
+            print("Mike input tide file is available at {}".format(mike_tide_file_path))
         else:
-            print('Mike rainfall input file already in path : ', mike_tide_file_path)
+            print('Mike tide input file already in path : ', mike_tide_file_path)
 
     except Exception:
         traceback.print_exc()
