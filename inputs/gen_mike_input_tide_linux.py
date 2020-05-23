@@ -81,7 +81,7 @@ def list_of_lists_to_df_first_row_as_columns(data):
 
 def replace_negative_99999_with_nan(df):
     num = df._get_numeric_data()
-    num[num == -99999.000] = np.nan
+    num[num == -99999.0] = np.nan
     return df
 
 
