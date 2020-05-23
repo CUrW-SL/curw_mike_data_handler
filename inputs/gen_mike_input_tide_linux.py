@@ -81,10 +81,7 @@ def list_of_lists_to_df_first_row_as_columns(data):
 
 def replace_negative_99999_with_nan(df):
     num = df._get_numeric_data()
-    print(num)
-    print(num[num==-99999.000])
     num[num == -99999.000] = np.nan
-    print(df)
     return df
 
 
@@ -108,14 +105,14 @@ def prepare_mike_dis_input(start, end, tide_id):
 
         tide_ts_df.set_index('time', inplace=True)
 
-        tide_ts_df = replace_negative_99999_with_nan(tide_ts_df)
+        processed_tide_ts_df = replace_negative_99999_with_nan(tide_ts_df)
 
-        if tide_ts_df.iloc[-1, 0] is np.nan:
-            tide_ts_df.iloc[-1, 0] = 0
+        if processed_tide_ts_df.iloc[-1, 0] is np.nan:
+            processed_tide_ts_df.iloc[-1, 0] = 0
 
-        tide_ts_df = ts_df.dropna()
+        processed_tide_ts_df = processed_tide_ts_df.dropna()
 
-        return tide_ts_df
+        return processed_tide_ts_df
 
     except Exception:
         traceback.print_exc()
