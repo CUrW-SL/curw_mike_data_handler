@@ -23,7 +23,7 @@ from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 ROOT_DIRECTORY = '/home/uwcc-admin/curw_mike_data_handler'
 # ROOT_DIRECTORY = 'D:\curw_mike_data_handlers'
-OUTPUT_DIRECTORY = "/mnt/disks/curwsl_nfs/mike/inputs"
+OUTPUT_DIRECTORY = "/mnt/disks/wrf_nfs/mike/inputs"
 
 
 def read_attribute_from_config_file(attribute, config, compulsory=False):
