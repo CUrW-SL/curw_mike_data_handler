@@ -18,7 +18,7 @@ do
     DIFF=$(((CURRENT-FILE_MODIFIED_TIME)/60))
     echo $DIFF
 
-    if [ $DIFF -lt 60 ]
+    if [ $DIFF -lt 40 ]
     then
       fgt=$(echo "$dir" | grep -oE "[^//]+$")
       echo $fgt
@@ -34,10 +34,6 @@ do
       echo $date
       echo $time
       echo $formatted_fgt
-
-      echo $dir
-
-      echo "/home/uwcc-admin/curw_mike_data_handler/outputs/extract_water_level.py -m 'mike11_2016' -t 'hourly_run' -f $formatted_fgt -d "\"${dir}\"""
 
       /home/uwcc-admin/curw_mike_data_handler/outputs/extract_water_level.py -m 'mike11_2016' -t 'hourly_run' -f "$formatted_fgt" -d "$dir"
     fi
