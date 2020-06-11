@@ -35,6 +35,8 @@ do
       echo $time
       echo $formatted_fgt
 
-      /home/uwcc-admin/curw_mike_data_handler/outputs/extract_water_level.py -m 'mike11_2016' -t 'hourly_run' -f $formatted_fgt -d "${dir}"
+      echo $dir
+
+      /home/uwcc-admin/curw_mike_data_handler/outputs/extract_water_level.py -m 'mike11_2016' -t 'hourly_run' -f $formatted_fgt -d "\"${dir}\""
     fi
 done
