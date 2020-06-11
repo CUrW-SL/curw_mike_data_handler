@@ -29,7 +29,7 @@ do
       IFS='-' read -r -a array2 <<< ${array[1]}
       time="${array2[0]}:${array2[1]}:${array2[2]}"
 
-      formatted_fgt="\"${date} ${time}\""
+      formatted_fgt="${date} ${time}"
 
       echo $date
       echo $time
