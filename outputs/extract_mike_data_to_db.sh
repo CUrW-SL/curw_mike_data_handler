@@ -10,7 +10,7 @@ for dir in $dirs;
 do
     echo "##########"
     echo "$dir"
-    file_name="$dir//resmike11_WL.csv"
+    file_name="$dir/resmike11_WL.csv"
     echo $file_name
     FILE_MODIFIED_TIME=$(date -r ${file_name} +%s)
     CURRENT=$(date +%s)
@@ -36,6 +36,6 @@ do
       echo $formatted_fgt
 
       echo $formatted_fgt
-      /home/uwcc-admin/curw_mike_data_handler/outputs/extract_water_level.py -m 'mike11_2016' -t 'hourly_run' -f $formatted_fgt -d $dir
+      /home/uwcc-admin/curw_mike_data_handler/outputs/extract_water_level.py -m 'mike11_2016' -t 'hourly_run' -f "${formatted_fgt}" -d "${dir}"
     fi
 done
