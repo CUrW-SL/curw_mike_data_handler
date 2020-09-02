@@ -265,6 +265,13 @@ def prepare_mike_rf_input(start, end):
         # print(hybrid_ts_df)
 
         mike_input = mike_input.round(1)
+
+        obs_stations_dict = {}
+        for i in range(len(obs_stations)):
+            obs_stations_dict[str(obs_stations[i][1])] = obs_stations[i][2]
+        for col in mike_input.columns:
+            mike_input.rename(columns={col: obs_stations_dict.get(col)})
+
         pd.set_option('display.max_rows', mike_input.shape[0]+1)
         pd.set_option('display.max_columns', mike_input.shape[1]+1)
         print(mike_input)
