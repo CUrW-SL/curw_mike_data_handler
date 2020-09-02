@@ -257,7 +257,7 @@ def prepare_mike_rf_input(start, end):
         for col in mike_input.columns:
             if len(obs_obs_mapping[col]) > 1:
                 print(col, obs_obs_mapping[col][1])
-                mike_input[col] = mike_input[col].fillna([obs_obs_mapping[col][1]])
+                mike_input[col] = mike_input[col].fillna(mike_input[obs_obs_mapping[col][1]])
 
         # print(hybrid_ts_df)
         mike_input = replace_nan_with_row_average(mike_input)
