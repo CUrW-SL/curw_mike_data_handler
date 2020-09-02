@@ -208,7 +208,7 @@ def get_all_obs_rain_hashids_from_curw_sim(pool):
                 for dict in results:
                     grid_id = dict.get("grid_id")
                     grid_id_parts = grid_id.split("_")
-                    obs_id_hash_id_mappings[grid_id_parts[1]] = dict.get("id")
+                    obs_id_hash_id_mappings[str(grid_id_parts[1])] = dict.get("id")
                 return obs_id_hash_id_mappings
             else:
                 return None
@@ -243,7 +243,7 @@ def prepare_mike_rf_input(start, end):
 
         for obs_id in obs_id_hash_id_mapping:
             # taking data from curw_sim database (data prepared based on active stations for hechms)
-            ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(str(obs_id)), start_date=start, end_date=end)
+            ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(obs_id), start_date=start, end_date=end)
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
             ts_df[obs_id] = ts_df[obs_id].astype('float64')
@@ -257,7 +257,7 @@ def prepare_mike_rf_input(start, end):
         for col in mike_input.columns:
             if len(obs_obs_mapping[col]) > 1:
                 print(col, obs_obs_mapping[col][1])
-                mike_input[col] = mike_input[col].fillna(int(obs_obs_mapping[col][1]))
+                mike_input[col] = mike_input[col].fillna(obs_obs_mapping[col][1])
 
         # print(hybrid_ts_df)
         mike_input = replace_nan_with_row_average(mike_input)
