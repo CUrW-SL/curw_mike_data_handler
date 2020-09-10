@@ -302,6 +302,7 @@ def prepare_mike_rf_input(start, end):
         traceback.print_exc()
     finally:
         destroy_Pool(pool)
+        destroy_Pool(obs_pool)
 
 
 def usage():

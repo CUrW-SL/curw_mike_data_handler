@@ -194,4 +194,6 @@ if __name__ == "__main__":
 
     except Exception:
         traceback.print_exc()
+    finally:
+        destroy_Pool(pool)
 
