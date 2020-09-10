@@ -191,9 +191,10 @@ def find_nearest_obs_stations_for_mike_rainfall_stations(mike_obs_stations, obs_
 
         count = 0
         for key in sorted_distances.keys():
-            if count < 3 and sorted_distances.get(key) <= 25:
-                obs_obs_mapping.append(key)
-                count += 1
+            if count < 3 and sorted_distances.get(key) <= 100:
+                if key != str(grid_id):
+                    obs_obs_mapping.append(key)
+                    count += 1
             else:
                 break
 
@@ -276,6 +277,9 @@ def prepare_mike_rf_input(start, end):
 
         mike_input = replace_negative_numbers_with_nan(hybrid_ts_df)
         for col in mike_input.columns:
+            if len(obs_obs_mapping[col]) > 0:
+                print(col, obs_obs_mapping[col][0])
+                mike_input[col] = mike_input[col].fillna(mike_input[obs_obs_mapping[col][0]])
             if len(obs_obs_mapping[col]) > 1:
                 print(col, obs_obs_mapping[col][1])
                 mike_input[col] = mike_input[col].fillna(mike_input[obs_obs_mapping[col][1]])
