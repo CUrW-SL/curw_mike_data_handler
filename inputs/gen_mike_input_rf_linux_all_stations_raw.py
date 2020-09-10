@@ -1,7 +1,7 @@
 #!/home/uwcc-admin/curw_mike_data_handler/venv/bin/python3
 "only she bang, root dir, output dir and filename are different from generic one"
 
-import pymysql
+import csv
 from datetime import datetime, timedelta
 import traceback
 import json
@@ -28,6 +28,19 @@ from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 ROOT_DIRECTORY = '/home/uwcc-admin/curw_mike_data_handler'
 # ROOT_DIRECTORY = 'D:\curw_mike_data_handlers'
 OUTPUT_DIRECTORY = "/mnt/disks/wrf_nfs/mike/inputs"
+
+
+def read_csv(file_name):
+    """
+    Read csv file
+    :param file_name: <file_path/file_name>.csv
+    :return: list of lists which contains each row of the csv file
+    """
+
+    with open(file_name, 'r') as f:
+        data = [list(line) for line in csv.reader(f)][1:]
+
+    return data
 
 
 def write_to_file(file_name, data):
@@ -143,20 +156,21 @@ def extract_active_curw_obs_rainfall_stations(curw_obs_pool, start_time, end_tim
         destroy_Pool(curw_obs_pool)
 
 
-# map nearest observational stations to flo2d grids
-def find_nearest_obs_stations_for_flo2d_stations(obs_stations):
-    # obs_stations : [0_hash_id,1_station_id,2_station_name,3_latitude,4_longitude]
+# find nearest active observational station for the selected mike rainfall stations
+def find_nearest_obs_stations_for_mike_rainfall_stations(mike_obs_stations, obs_stations):
+
+    # [hash_id,station_id,station_name,latitude,longitude]
 
     obs_obs_mapping_dict = {}
 
-    for origin_index in range(len(obs_stations)):
+    for origin_index in range(len(mike_obs_stations)):
 
-        grid_id = obs_stations[origin_index][1]
+        grid_id = mike_obs_stations[origin_index][1]
 
         obs_obs_mapping = []
 
-        origin_lat = float(obs_stations[origin_index][3])
-        origin_lng = float(obs_stations[origin_index][4])
+        origin_lat = float(mike_obs_stations[origin_index][3])
+        origin_lng = float(mike_obs_stations[origin_index][4])
 
         distances = {}
 
@@ -183,11 +197,7 @@ def find_nearest_obs_stations_for_flo2d_stations(obs_stations):
             else:
                 break
 
-        # print(flo2d_obs_mapping)
         obs_obs_mapping_dict[str(grid_id)] = obs_obs_mapping
-
-    # flo2d_grid_mappings[dict.get("grid_id")] = [dict.get("obs1"), dict.get("obs2"), dict.get("obs3")]
-    flo2d_grid_mappings_dict = {}
 
     return obs_obs_mapping_dict
 
@@ -222,6 +232,11 @@ def get_all_obs_rain_hashids_from_curw_sim(pool):
 def prepare_mike_rf_input(start, end):
 
     try:
+        mike_obs_stations = read_csv(os.path.join(ROOT_DIRECTORY, 'inputs', 'params', 'mike_rainfall_stations.csv'))
+        selected_obs_ids = []
+        for list in mike_obs_stations:
+            selected_obs_ids.append(str(list[1]))
+        # [hash_id,station_id,station_name,latitude,longitude]
 
         #### process staton based hybrid timeseries ####
         hybrid_ts_df = pd.DataFrame()
@@ -239,11 +254,17 @@ def prepare_mike_rf_input(start, end):
 
         obs_id_hash_id_mapping = get_all_obs_rain_hashids_from_curw_sim(pool)
         obs_stations = extract_active_curw_obs_rainfall_stations(curw_obs_pool=obs_pool, start_time=start, end_time=end)
-        obs_obs_mapping = find_nearest_obs_stations_for_flo2d_stations(obs_stations)
+        obs_obs_mapping = find_nearest_obs_stations_for_mike_rainfall_stations(mike_obs_stations=mike_obs_stations,
+                                                                               obs_stations=obs_stations)
 
-        for obs_id in obs_id_hash_id_mapping:
-            # taking data from curw_sim database (data prepared based on active stations for hechms)
-            ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(obs_id), start_date=start, end_date=end)
+        for obs_id in selected_obs_ids:
+
+            if obs_id in obs_id_hash_id_mapping.keys():
+                # taking data from curw_sim database (data prepared based on active stations for hechms)
+                ts = TS.get_timeseries(id_=obs_id_hash_id_mapping.get(obs_id), start_date=start, end_date=end)
+            else:
+                ts = []
+
             ts.insert(0, ['time', obs_id])
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
             ts_df[obs_id] = ts_df[obs_id].astype('float64')
@@ -259,10 +280,7 @@ def prepare_mike_rf_input(start, end):
                 print(col, obs_obs_mapping[col][1])
                 mike_input[col] = mike_input[col].fillna(mike_input[obs_obs_mapping[col][1]])
 
-        # print(hybrid_ts_df)
         mike_input = replace_nan_with_row_average(mike_input)
-
-        # print(hybrid_ts_df)
 
         mike_input = mike_input.round(1)
 
