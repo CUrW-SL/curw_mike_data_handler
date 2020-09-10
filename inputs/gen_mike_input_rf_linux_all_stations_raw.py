@@ -289,7 +289,7 @@ def prepare_mike_rf_input(start, end):
         mike_input = mike_input.round(1)
 
         station_name_dict = {}
-        for i in range(len(obs_stations)):
+        for i in range(len(mike_obs_stations)):
             station_name_dict[str(mike_obs_stations[i][1])] = mike_obs_stations[i][2]
         for col in mike_input.columns:
             mike_input = mike_input.rename(columns={col: station_name_dict.get(col)})
