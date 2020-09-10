@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 end_time = arg.strip()
 
         # Load config params
-        config = json.loads(open(os.path.join('inputs', 'tide_config.json')).read())
+        config = json.loads(open(os.path.join('inputs', 'configs', 'tide_config.json')).read())
 
         output_dir = read_attribute_from_config_file('output_dir', config)
         file_name = read_attribute_from_config_file('output_file_name', config)

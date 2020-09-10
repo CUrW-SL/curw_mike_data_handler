@@ -1,5 +1,4 @@
 #!/home/uwcc-admin/curw_mike_data_handler/venv/bin/python3
-"only she bang, root dir, output dir and filename are different from generic one"
 
 import csv
 from datetime import datetime, timedelta
@@ -341,7 +340,7 @@ if __name__ == "__main__":
                 end_time = arg.strip()
 
         # Load config params
-        config = json.loads(open(os.path.join('inputs', 'rain_config_ws.json')).read())
+        config = json.loads(open(os.path.join('inputs', 'configs', 'rain_config_ws.json')).read())
         # config = json.loads(open('rain_config.json').read())
 
         output_dir = read_attribute_from_config_file('output_dir', config)
