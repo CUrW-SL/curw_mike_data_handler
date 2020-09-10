@@ -1,4 +1,4 @@
-#!"D:\curw_mike_data_handler\venv\Scripts\python.exe"
+#!"C:\curw\curw_mike_data_handlers\venv\Scripts\python.exe"
 
 import csv
 from datetime import datetime, timedelta
@@ -24,7 +24,7 @@ from db_adapter.curw_sim.common import extract_obs_rain_5_min_ts
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 # ROOT_DIRECTORY = '/home/shadhini/dev/repos/curw-sl/curw_mike_data_handlers'
-ROOT_DIRECTORY = 'D:\curw_mike_data_handlers'
+ROOT_DIRECTORY = 'C:\curw\curw_mike_data_handlers'
 
 
 def read_csv(file_name):
@@ -177,7 +177,7 @@ def prepare_mike_rf_input(start, end, step):
 
 def usage():
     usageText = """
-    Usage: .\gen_mike_input_rf.py [-s "YYYY-MM-DD HH:MM:SS"] [-e "YYYY-MM-DD HH:MM:SS"]
+    Usage: .\inputs\gen_mike_input_rf_obs_win.py [-s "YYYY-MM-DD HH:MM:SS"] [-e "YYYY-MM-DD HH:MM:SS"] [-t XXX]
 
     -h  --help          Show usage
     -s  --start_time    Mike rainfall timeseries start time (e.g: "2019-06-05 00:00:00"). Default is 00:00:00, 3 days before today.
@@ -189,6 +189,8 @@ def usage():
 
 
 if __name__ == "__main__":
+
+    # os.system("cd {}".format(ROOT_DIRECTORY))
 
     set_db_config_file_path(os.path.join(ROOT_DIRECTORY, 'db_adapter_config.json'))
 
