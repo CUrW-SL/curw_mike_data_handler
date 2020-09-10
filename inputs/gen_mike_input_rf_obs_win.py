@@ -1,4 +1,4 @@
-#!"C:\curw\curw_mike_data_handlers\venv\Scripts\python.exe"
+#!"C:\curw\curw_mike_data_handler\venv\Scripts\python.exe"
 
 import csv
 from datetime import datetime, timedelta
@@ -24,7 +24,7 @@ from db_adapter.curw_sim.common import extract_obs_rain_5_min_ts
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 # ROOT_DIRECTORY = '/home/shadhini/dev/repos/curw-sl/curw_mike_data_handlers'
-ROOT_DIRECTORY = 'C:\curw\curw_mike_data_handlers'
+ROOT_DIRECTORY = 'C:\curw\curw_mike_data_handler'
 
 
 def read_csv(file_name):
