@@ -266,10 +266,20 @@ def prepare_mike_rf_input(start, end):
                 ts = []
 
             ts.insert(0, ['time', obs_id])
+            if obs_id == '100013':
+                print(ts)
             ts_df = list_of_lists_to_df_first_row_as_columns(ts)
+            if obs_id == '100013':
+                print(ts_df)
             ts_df[obs_id] = ts_df[obs_id].astype('float64')
+            if obs_id == '100013':
+                print(ts_df)
 
             hybrid_ts_df = pd.merge(hybrid_ts_df, ts_df, how="left", on='time')
+            pd.set_option('display.max_rows', hybrid_ts_df.shape[0]+1)
+            pd.set_option('display.max_columns', hybrid_ts_df.shape[1]+1)
+            if obs_id == '100013':
+                print(hybrid_ts_df)
 
         hybrid_ts_df.set_index('time', inplace=True)
         hybrid_ts_df = hybrid_ts_df.resample('15min', label='right', closed='right').sum()
