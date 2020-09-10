@@ -273,16 +273,8 @@ def prepare_mike_rf_input(start, end):
 
         hybrid_ts_df.set_index('time', inplace=True)
         hybrid_ts_df = hybrid_ts_df.resample('15min', label='right', closed='right').sum()
-        pd.set_option('display.max_rows', hybrid_ts_df.shape[0] + 1)
-        pd.set_option('display.max_columns', hybrid_ts_df.shape[1] + 1)
-        print(hybrid_ts_df)
-        print("##############################################################")
 
         mike_input = replace_negative_numbers_with_nan(hybrid_ts_df)
-        pd.set_option('display.max_rows', mike_input.shape[0] + 1)
-        pd.set_option('display.max_columns', mike_input.shape[1] + 1)
-        print(mike_input)
-        print("##############################################################")
         for col in mike_input.columns:
             if len(obs_obs_mapping[col]) > 1:
                 print(col, obs_obs_mapping[col][1])
@@ -292,11 +284,11 @@ def prepare_mike_rf_input(start, end):
 
         mike_input = mike_input.round(1)
 
-        obs_stations_dict = {}
+        station_name_dict = {}
         for i in range(len(obs_stations)):
-            obs_stations_dict[str(obs_stations[i][1])] = obs_stations[i][2]
+            station_name_dict[str(mike_obs_stations[i][1])] = mike_obs_stations[i][2]
         for col in mike_input.columns:
-            mike_input = mike_input.rename(columns={col: obs_stations_dict.get(col)})
+            mike_input = mike_input.rename(columns={col: station_name_dict.get(col)})
 
         # pd.set_option('display.max_rows', mike_input.shape[0]+1)
         # pd.set_option('display.max_columns', mike_input.shape[1]+1)
