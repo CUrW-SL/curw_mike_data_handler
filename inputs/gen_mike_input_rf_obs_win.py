@@ -1,3 +1,5 @@
+#!"E:\curw_mike_data_handler\venv\Scripts\python.exe"
+
 import csv
 from datetime import datetime, timedelta
 import traceback
