@@ -1,5 +1,3 @@
-#!C:\curw\curw_mike_data_handler\venv\Scripts\python
-
 import csv
 from datetime import datetime, timedelta
 import traceback
@@ -190,7 +188,7 @@ def usage():
 
 if __name__ == "__main__":
 
-    # os.system("cd {}".format(ROOT_DIRECTORY))
+    os.system("cd {}".format(ROOT_DIRECTORY))
 
     set_db_config_file_path(os.path.join(ROOT_DIRECTORY, 'db_adapter_config.json'))
 
