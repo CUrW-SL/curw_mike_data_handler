@@ -1,4 +1,4 @@
-#!"E:\curw_mike_data_handler\venv\Scripts\python.exe"
+#!C:\curw\curw_mike_data_handler\venv\Scripts\python
 
 import csv
 from datetime import datetime, timedelta
