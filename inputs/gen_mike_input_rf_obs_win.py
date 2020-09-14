@@ -158,6 +158,10 @@ def prepare_mike_rf_input(start, end, step):
 
         ts_df.set_index('time', inplace=True)
         ts_df = ts_df.resample('{}min'.format(step), label='right', closed='right').sum()
+        pd.set_option('display.max_rows', ts_df.shape[0] + 1)
+        pd.set_option('display.max_columns', ts_df.shape[1] + 1)
+        print(ts_df)
+        print("#######################################")
 
         mike_input = replace_negative_numbers_with_nan(ts_df)
         pd.set_option('display.max_rows', mike_input.shape[0] + 1)
@@ -165,9 +169,6 @@ def prepare_mike_rf_input(start, end, step):
         print(mike_input)
         print("#######################################")
         mike_input = replace_nan_with_empty_string(mike_input)
-        pd.set_option('display.max_rows', mike_input.shape[0]+1)
-        pd.set_option('display.max_columns', mike_input.shape[1]+1)
-        print(mike_input)
 
         # mike_input = mike_input.fillna('')
         mike_input = mike_input.round(1)
