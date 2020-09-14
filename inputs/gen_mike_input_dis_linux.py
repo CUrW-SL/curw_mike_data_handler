@@ -178,7 +178,7 @@ if __name__ == "__main__":
         if output_dir is None:
             output_dir = os.path.join(OUTPUT_DIRECTORY, (datetime.utcnow() + timedelta(hours=5, minutes=30)).strftime('%Y-%m-%d_%H-00-00'))
         if file_name is None:
-            file_name = 'mike_dis_{}.txt'.format(latest_fgt.strftime('%Y-%m-%d_%H-%M-00'))
+            file_name = 'mike_dis.txt'  #.format(latest_fgt.strftime('%Y-%m-%d_%H-%M-00'))
 
         mike_dis_file_path = os.path.join(output_dir, file_name)
 
