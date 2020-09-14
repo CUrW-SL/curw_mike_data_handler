@@ -18,7 +18,7 @@ from db_adapter.constants import connection as con_params
 from db_adapter.base import get_Pool, destroy_Pool
 
 from db_adapter.constants import CURW_SIM_DATABASE, CURW_SIM_PASSWORD, CURW_SIM_USERNAME, CURW_SIM_PORT, CURW_SIM_HOST
-from db_adapter.curw_sim.common import extract_obs_rain_5_min_ts
+from db_adapter.curw_sim.common import extract_obs_rain_custom_min_intervals
 from db_adapter.constants import COMMON_DATE_TIME_FORMAT
 
 # ROOT_DIRECTORY = '/home/shadhini/dev/repos/curw-sl/curw_mike_data_handlers'
@@ -138,7 +138,7 @@ def prepare_mike_rf_input(start, end, step):
             station_dict[mike_obs_stations[i][1]] = [mike_obs_stations[i][0], mike_obs_stations[i][2]]
 
         ts_df = pd.DataFrame()
-        ts_df['time'] = pd.date_range(start=start, end=end, freq='5min')
+        ts_df['time'] = pd.date_range(start=start, end=end, freq='{}min'.format(step))
 
         obs_pool = get_Pool(host=con_params.CURW_OBS_HOST, port=con_params.CURW_OBS_PORT, user=con_params.CURW_OBS_USERNAME,
                         password=con_params.CURW_OBS_PASSWORD,
@@ -148,8 +148,8 @@ def prepare_mike_rf_input(start, end, step):
 
         for obs_id in station_dict.keys():
 
-            ts = extract_obs_rain_5_min_ts(connection=connection, id=station_dict.get(obs_id)[0],
-                                           start_time=start, end_time=end)
+            ts = extract_obs_rain_custom_min_intervals(connection=connection, id=station_dict.get(obs_id)[0],
+                                                       time_step=step, start_time=start, end_time=end)
             ts.insert(0, ['time', obs_id])
             df = list_of_lists_to_df_first_row_as_columns(ts)
             df[obs_id] = df[obs_id].astype('float64')
@@ -157,21 +157,20 @@ def prepare_mike_rf_input(start, end, step):
             ts_df = pd.merge(ts_df, df, how="left", on='time')
 
         ts_df.set_index('time', inplace=True)
-        ts_df = ts_df.resample('{}min'.format(step), label='right', closed='right').sum()
-        pd.set_option('display.max_rows', ts_df.shape[0] + 1)
-        pd.set_option('display.max_columns', ts_df.shape[1] + 1)
-        print(ts_df)
-        print("#######################################")
 
         mike_input = replace_negative_numbers_with_nan(ts_df)
         pd.set_option('display.max_rows', mike_input.shape[0] + 1)
         pd.set_option('display.max_columns', mike_input.shape[1] + 1)
         print(mike_input)
         print("#######################################")
-        mike_input = replace_nan_with_empty_string(mike_input)
+        # mike_input = replace_nan_with_empty_string(mike_input)
 
-        # mike_input = mike_input.fillna('')
+        mike_input = mike_input.fillna('')
         mike_input = mike_input.round(1)
+        pd.set_option('display.max_rows', mike_input.shape[0] + 1)
+        pd.set_option('display.max_columns', mike_input.shape[1] + 1)
+        print(mike_input)
+        print("#######################################")
 
         for col in mike_input.columns:
             mike_input = mike_input.rename(columns={col: station_dict.get(col)[1]})
