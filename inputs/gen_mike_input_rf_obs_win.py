@@ -120,6 +120,12 @@ def replace_nan_with_row_average(df):
     return df
 
 
+def replace_nan_with_empty_string(df):
+    for i, col in enumerate(df):
+        df.iloc[:, i] = df.iloc[:, i].fillna('')
+    return df
+
+
 def prepare_mike_rf_input(start, end, step):
 
     try:
@@ -154,8 +160,16 @@ def prepare_mike_rf_input(start, end, step):
         ts_df = ts_df.resample('{}min'.format(step), label='right', closed='right').sum()
 
         mike_input = replace_negative_numbers_with_nan(ts_df)
+        pd.set_option('display.max_rows', mike_input.shape[0] + 1)
+        pd.set_option('display.max_columns', mike_input.shape[1] + 1)
+        print(mike_input)
+        print("#######################################")
+        mike_input = replace_nan_with_empty_string(mike_input)
+        pd.set_option('display.max_rows', mike_input.shape[0]+1)
+        pd.set_option('display.max_columns', mike_input.shape[1]+1)
+        print(mike_input)
 
-        mike_input = mike_input.fillna('')
+        # mike_input = mike_input.fillna('')
         mike_input = mike_input.round(1)
 
         for col in mike_input.columns:
