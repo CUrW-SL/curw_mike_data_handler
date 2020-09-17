@@ -87,8 +87,8 @@ def check_time_format(time):
         if time.strftime('%S') != '00':
             print("Seconds should be always 00")
             exit(1)
-        if time.strftime('%M') not in ('00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'):
-            print("Minutes should be always multiple of 15")
+        if time.strftime('%M') not in ('00'):
+            print("Minutes should be always 00")
             exit(1)
 
         return True
