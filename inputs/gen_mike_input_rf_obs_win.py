@@ -87,7 +87,7 @@ def check_time_format(time):
         if time.strftime('%S') != '00':
             print("Seconds should be always 00")
             exit(1)
-        if time.strftime('%M') not in ('00', '15', '30', '45'):
+        if time.strftime('%M') not in ('00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'):
             print("Minutes should be always multiple of 15")
             exit(1)
 
@@ -189,6 +189,8 @@ def prepare_mike_rf_input(start, end, step):
 
 def usage():
     usageText = """
+    Generate rainfall input for MIKE from observations for any given time period and frequency.
+    
     Usage: .\inputs\gen_mike_input_rf_obs_win.py [-s "YYYY-MM-DD HH:MM:SS"] [-e "YYYY-MM-DD HH:MM:SS"] [-t XXX]
 
     -h  --help          Show usage
@@ -245,6 +247,12 @@ if __name__ == "__main__":
             end_time = (datetime.now() + timedelta(days=2)).strftime('%Y-%m-%d 00:00:00')
         else:
             check_time_format(time=end_time)
+
+        if time_step is None:
+            time_step = 15
+        else:
+            if time_step % 5 != 0:
+                print("Time step should be a multiple of 5.")
 
         if output_dir is None:
             output_dir = os.path.join(ROOT_DIRECTORY, "data")
