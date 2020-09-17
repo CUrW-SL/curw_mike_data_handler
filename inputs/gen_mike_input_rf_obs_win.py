@@ -251,7 +251,7 @@ if __name__ == "__main__":
         if time_step is None:
             time_step = 15
         else:
-            if int(time_step) % 5 != 0:
+            if time_step % 5 != 0:
                 print("Time step should be a multiple of 5.")
                 exit(0)
 
