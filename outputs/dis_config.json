@@ -3,7 +3,7 @@
 
   "utc_offset": "",
 
-  "sim_tag": "daily_run",
+  "sim_tag": "hourly_run",
 
   "model": "MIKE11",
 
