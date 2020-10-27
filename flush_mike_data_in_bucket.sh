@@ -11,6 +11,6 @@ do
   if [ $DIFF -gt 60 ]
   then
     echo $file
-    rm -vr $file
+    rm -v $file
   fi
 done
