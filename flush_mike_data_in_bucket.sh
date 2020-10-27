@@ -5,6 +5,7 @@ NOW=$(date +%s)
 
 for file in $files;
 do
+  echo $file
   # split string by delimiter '://'
   IFS='://' read -ra LIST <<< "$file"
   echo $LIST
