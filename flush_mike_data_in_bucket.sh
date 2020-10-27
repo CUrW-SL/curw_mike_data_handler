@@ -5,12 +5,19 @@ NOW=$(date +%s)
 
 for file in $files;
 do
-  LAST_MODIFIED_DATE=$(date -r $file +%s)
+  # split string by delimiter '://'
+  IFS='://' read -ra LIST <<< "$file"
+  echo $LIST
+
+  # first element in array
+  filename="/mnt/disks/${LIST[1]}"
+  echo $filename
+
+  LAST_MODIFIED_DATE=$(date -r $filename +%s)
   DIFF=$(((NOW-LAST_MODIFIED_DATE)/60/60/24))
   echo $DIFF
   if [ $DIFF -gt 60 ]
   then
-    echo $file
-    rm -v $file
+    rm -v $filename
   fi
 done
