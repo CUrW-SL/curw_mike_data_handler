@@ -19,7 +19,7 @@ do
   echo $DIFF
   if [ $DIFF -gt 60 ]
   then
-    rm -vdr $filename
+    rm -vr $filename
   fi
 done
 
@@ -44,6 +44,6 @@ do
   echo $DIFF
   if [ $DIFF -gt 60 ]
   then
-    rm -vdr $filename
+    rm -vr $filename
   fi
 done
