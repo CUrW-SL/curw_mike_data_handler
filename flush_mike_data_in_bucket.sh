@@ -6,12 +6,13 @@ NOW=$(date +%s)
 for file in $files;
 do
   echo $file
-  # split string by delimiter '://'
-  IFS='://' read -ra LIST <<< "$file"
-  echo $LIST
 
-  # first element in array
-  filename="/mnt/disks/${LIST[1]}"
+  IFS='/' read -ra LIST <<< "$file"
+
+  filename="/mnt/disks"
+  for i in "${LIST[@]:2}"; do
+    filename="$filename/$i"
+  done
   echo $filename
 
   LAST_MODIFIED_DATE=$(date -r $filename +%s)
