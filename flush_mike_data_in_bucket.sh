@@ -19,15 +19,15 @@ do
   echo $DIFF
   if [ $DIFF -gt 60 ]
   then
-    rm -v $filename
+    rm -vdr $filename
   fi
 done
 
-files=$(gsutil ls gs://wrf_nfs/mike/outputs/*/*.*)
+files2=$(gsutil ls gs://wrf_nfs/mike/outputs/*/*.*)
 
 NOW=$(date +%s)
 
-for file in $files;
+for file in $files2;
 do
   echo $file
 
@@ -44,6 +44,6 @@ do
   echo $DIFF
   if [ $DIFF -gt 60 ]
   then
-    rm -v $filename
+    rm -vdr $filename
   fi
 done
